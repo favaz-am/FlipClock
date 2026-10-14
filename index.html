@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A pixel-perfect, realistic Flip Clock web application inspired by classic split-flap displays." />
+  <title>Flip Clock</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Font for sleek, bold numerals -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- MAIN CLOCK DISPLAY -->
+  <main class="clock-container" aria-label="Flip Clock">
+    <!-- HOURS -->
+    <div class="digit-group" id="hours-group">
+      <div class="flip-card" id="hours-tens" data-value="0">
+        <div class="card-top"><span>0</span></div>
+        <div class="card-bottom"><span>0</span></div>
+        <div class="flip-leaf">
+          <div class="flip-leaf-front"><span>0</span></div>
+          <div class="flip-leaf-back"><span>0</span></div>
+        </div>
+      </div>
+      <div class="flip-card" id="hours-units" data-value="0">
+        <div class="card-top"><span>0</span></div>
+        <div class="card-bottom"><span>0</span></div>
+        <div class="flip-leaf">
+          <div class="flip-leaf-front"><span>0</span></div>
+          <div class="flip-leaf-back"><span>0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="colon">:</div>
+
+    <!-- MINUTES -->
+    <div class="digit-group" id="minutes-group">
+      <div class="flip-card" id="minutes-tens" data-value="0">
+        <div class="card-top"><span>0</span></div>
+        <div class="card-bottom"><span>0</span></div>
+        <div class="flip-leaf">
+          <div class="flip-leaf-front"><span>0</span></div>
+          <div class="flip-leaf-back"><span>0</span></div>
+        </div>
+      </div>
+      <div class="flip-card" id="minutes-units" data-value="0">
+        <div class="card-top"><span>0</span></div>
+        <div class="card-bottom"><span>0</span></div>
+        <div class="flip-leaf">
+          <div class="flip-leaf-front"><span>0</span></div>
+          <div class="flip-leaf-back"><span>0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECONDS (Optional) -->
+    <div class="seconds-wrapper" id="seconds-wrapper">
+      <div class="colon">:</div>
+      <div class="digit-group" id="seconds-group">
+        <div class="flip-card" id="seconds-tens" data-value="0">
+          <div class="card-top"><span>0</span></div>
+          <div class="card-bottom"><span>0</span></div>
+          <div class="flip-leaf">
+            <div class="flip-leaf-front"><span>0</span></div>
+            <div class="flip-leaf-back"><span>0</span></div>
+          </div>
+        </div>
+        <div class="flip-card" id="seconds-units" data-value="0">
+          <div class="card-top"><span>0</span></div>
+          <div class="card-bottom"><span>0</span></div>
+          <div class="flip-leaf">
+            <div class="flip-leaf-front"><span>0</span></div>
+            <div class="flip-leaf-back"><span>0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM / PM BADGE -->
+    <div class="ampm-card" id="ampm-badge" data-value="AM">
+      <div class="card-top"><span id="ampm-text">AM</span></div>
+      <div class="card-bottom"><span>AM</span></div>
+    </div>
+  </main>
+
+  <!-- HUD TRIGGER BUTTON (Visible when HUD is hidden) -->
+  <button id="show-hud-btn" class="show-hud-btn" aria-label="Show Control Panel" title="Show Controls (H)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>
+  </button>
+
+  <!-- FLOATING SETTINGS PANEL (HUD) -->
+  <aside id="hud" class="hud-panel" aria-label="Settings Panel">
+    <div class="hud-header">
+      <h2>Clock Settings</h2>
+      <button id="hide-hud-btn" class="icon-btn" title="Hide HUD (H)" aria-label="Hide Control Panel">✕</button>
+    </div>
+
+    <div class="hud-body">
+      <!-- Mode Selection -->
+      <div class="hud-group">
+        <label class="section-label">Clock Mode</label>
+        <div class="segmented-control">
+          <button id="mode-live" class="segment active">Live Clock</button>
+          <button id="mode-fixed" class="segment">Fixed Time</button>
+        </div>
+      </div>
+
+      <!-- Quick Time Set (Active in Fixed Mode) -->
+      <div id="quick-time-group" class="hud-group disabled">
+        <label class="section-label">Fixed Time Setting</label>
+        <div class="time-inputs-row">
+          <input type="number" id="hud-hour-input" min="1" max="12" value="10" aria-label="Hour input" />
+          <span>:</span>
+          <input type="number" id="hud-minute-input" min="0" max="59" value="00" aria-label="Minute input" />
+          <select id="hud-ampm-select" aria-label="AM or PM selector">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Display Toggles -->
+      <div class="hud-group">
+        <label class="section-label">Toggles</label>
+        <label class="toggle-row">
+          <span>Show Seconds</span>
+          <input type="checkbox" id="toggle-seconds" />
+          <span class="switch"></span>
+        </label>
+        <label class="toggle-row">
+          <span>24-Hour Format</span>
+          <input type="checkbox" id="toggle-24h" />
+          <span class="switch"></span>
+        </label>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="hud-actions">
+        <button id="open-editor-btn" class="btn btn-secondary" title="Press T">Time Editor (T)</button>
+        <button id="toggle-fullscreen-btn" class="btn btn-secondary" title="Press F">Fullscreen (F)</button>
+        <button id="reset-settings-btn" class="btn btn-danger">Reset Defaults</button>
+      </div>
+
+      <div class="hud-footer">
+        <small>Shortcuts: <strong>H</strong> (HUD) | <strong>F</strong> (Fullscreen) | <strong>T</strong> (Editor) | <strong>Esc</strong> (Exit)</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TIME EDITOR MODAL -->
+  <div id="time-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <h3 id="modal-title">Set Custom Time</h3>
+      <div class="modal-body">
+        <div class="time-inputs-row modal-inputs">
+          <div class="input-field">
+            <label for="modal-hour">Hours</label>
+            <input type="number" id="modal-hour" min="1" max="12" value="10" />
+          </div>
+          <span class="colon-spacer">:</span>
+          <div class="input-field">
+            <label for="modal-minute">Minutes</label>
+            <input type="number" id="modal-minute" min="0" max="59" value="00" />
+          </div>
+          <div class="input-field" id="modal-ampm-wrapper">
+            <label for="modal-ampm">Period</label>
+            <select id="modal-ampm">
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+        <button id="modal-save-btn" class="btn btn-primary">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,608 @@
+/* ==========================================================================
+   RESET & GLOBAL VARIABLES
+   ========================================================================== */
+:root {
+  --bg-color: #0b0c10;
+  --card-bg-top: #24262e;
+  --card-bg-bottom: #1a1b22;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text-color: #f0f2f5;
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --hud-bg: rgba(20, 21, 26, 0.88);
+  --hud-border: rgba(255, 255, 255, 0.12);
+  --shadow-color: rgba(0, 0, 0, 0.6);
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --flip-duration: 0.5s;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  background: radial-gradient(
+  circle at center,
+  #181a20 0%,
+  #0b0c10 100%
+);
+}
+
+/* Background gradient subtleness */
+body::before {
+  content: "";
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   FLIP CLOCK CONTAINER & LAYOUT
+   ========================================================================== */
+.clock-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.digit-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.seconds-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.seconds-wrapper.hidden {
+  display: none;
+}
+
+.colon {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 800;
+  color: #4a4d5a;
+  margin-top: -0.5rem;
+  animation: pulseColon 2s infinite ease-in-out;
+}
+
+@keyframes pulseColon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ==========================================================================
+   3D SPLIT-FLAP CARD DESIGN
+   ========================================================================== */
+.flip-card {
+  position: relative;
+  width: clamp(75px, 12vw, 150px);
+  height: clamp(100px, 16vw, 200px);
+  perspective: 1000px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px var(--shadow-color);
+  font-size: clamp(4.5rem, 11vw, 9.5rem);
+  font-weight: 800;
+  line-height: 0;
+  color: var(--text-color);
+}
+
+/* Top & Bottom Halves */
+.card-top, .card-bottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.card-top {
+  top: 0;
+  background: linear-gradient(180deg, #2e303b 0%, var(--card-bg-top) 100%);
+  border-radius: 12px 12px 0 0;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.card-top span {
+  transform: translateY(50%);
+}
+
+.card-bottom {
+  bottom: 0;
+  background: linear-gradient(180deg, var(--card-bg-bottom) 0%, #121318 100%);
+  border-radius: 0 0 12px 12px;
+  align-items: flex-start;
+  border-top: 1px solid var(--card-border);
+}
+
+.card-bottom span {
+  transform: translateY(-50%);
+}
+
+/* Central horizontal shadow fold line */
+.flip-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 5;
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+/* Rotating Leaf */
+.flip-leaf {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  transform-origin: bottom center;
+  transform-style: preserve-3d;
+  z-index: 4;
+  border-radius: 12px 12px 0 0;
+}
+
+.flip-leaf-front, .flip-leaf-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.flip-leaf-front {
+  top: 0;
+  background: linear-gradient(180deg, #2e303b 0%, var(--card-bg-top) 100%);
+  align-items: flex-end;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.flip-leaf-front span {
+  transform: translateY(50%);
+}
+
+.flip-leaf-back {
+  top: 0;
+  background: linear-gradient(180deg, var(--card-bg-bottom) 0%, #121318 100%);
+  align-items: flex-start;
+  transform: rotateX(180deg);
+  border-radius: 0 0 12px 12px;
+  border-top: 1px solid var(--card-border);
+}
+
+.flip-leaf-back span {
+  transform: translateY(-50%);
+}
+
+/* Animation trigger class */
+.flip-card.flipping .flip-leaf {
+  animation: flipAnimation var(--flip-duration) cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+}
+
+@keyframes flipAnimation {
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(-180deg);
+  }
+}
+
+/* AM/PM Badge */
+.ampm-card {
+  position: relative;
+  width: clamp(50px, 7vw, 80px);
+  height: clamp(40px, 5vw, 65px);
+  background: var(--card-bg-top);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(1rem, 2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent-color);
+  box-shadow: 0 8px 20px var(--shadow-color);
+  border: 1px solid var(--card-border);
+  align-self: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.ampm-card.hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   FLOATING HUD CONTROL PANEL
+   ========================================================================== */
+.hud-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background: var(--hud-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--hud-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hud-panel.hidden {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+  pointer-events: none;
+}
+
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--hud-border);
+}
+
+.hud-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #a0a5b5;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.hud-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.hud-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hud-group.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Segmented Control */
+.segmented-control {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.segment {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment.active {
+  background: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* Time Inputs Row */
+.time-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-inputs-row input, .time-inputs-row select {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--hud-border);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.time-inputs-row input[type="number"] {
+  width: 65px;
+}
+
+.time-inputs-row input:focus, .time-inputs-row select:focus {
+  border-color: var(--accent-color);
+}
+
+/* Toggle Switch Rows */
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.toggle-row input {
+  display: none;
+}
+
+.switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle-row input:checked + .switch {
+  background: var(--accent-color);
+}
+
+.toggle-row input:checked + .switch::after {
+  transform: translateX(20px);
+}
+
+/* Action Buttons */
+.hud-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--accent-color);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-color);
+  border: 1px solid var(--hud-border);
+}
+.btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+
+.btn-danger {
+  background: transparent;
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.btn-danger:hover { background: rgba(248, 113, 113, 0.15); }
+
+.hud-footer {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.72rem;
+  margin-top: 0.5rem;
+}
+
+/* Show HUD trigger button */
+.show-hud-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--hud-bg);
+  border: 1px solid var(--hud-border);
+  color: var(--text-color);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  z-index: 90;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.show-hud-btn:hover {
+  transform: scale(1.05);
+}
+
+.show-hud-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   TIME EDITOR MODAL
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-card {
+  background: #181a20;
+  border: 1px solid var(--hud-border);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 90%;
+  max-width: 380px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.modal-inputs {
+  justify-content: center;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.input-field label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.colon-spacer {
+  font-size: 1.5rem;
+  font-weight: bold;
+  align-self: flex-end;
+  margin-bottom: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 768px) {
+  .clock-container {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  .seconds-wrapper {
+    gap: 0.75rem;
+  }
+  .digit-group {
+    gap: 0.35rem;
+  }
+  .hud-panel {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .clock-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .ampm-card {
+    align-self: center;
+    margin-bottom: 0;
+  }
+}
