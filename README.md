@@ -64,7 +64,7 @@ FlipClock/
 
 ## Live Demo
 
-Coming soon.
+https://favaz-am.github.io/FlipClock/
 
 ## License
 
